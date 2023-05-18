@@ -520,6 +520,182 @@ header
   }
 }
 
+.loginBtn{
+  padding: 5px 0 ;
+  width:100px;
+  border-radius: 30px;
+  background-color:#ed563b;
+  color:white;
+  border:none;
+  
+}
+.cancelBtn{
+  padding: 5px 0 ;
+  width:100px;
+  border-radius: 30px;
+  background-color:#6c757d;
+  color:white;
+  border:none;
+  
+}
+
+
+
+/* 
+---------------------------------------------
+Footer
+--------------------------------------------- 
+*/
+
+.single-logo-item img {
+  max-width: 180px;
+  margin: 0 auto;
+}
+
+
+
+.footer-area {
+  background-color: #051922;
+  color: #fff;
+  padding: 150px 0;
+  text-align: left;
+}
+
+h2.widget-title {
+  font-size: 24px;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 20px;
+  color: #fff;
+}
+
+h2.widget-title:after {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 20px;
+  height: 2px;
+  background-color: #ed563b;
+  content: "";
+}
+
+.footer-box p {
+  color: #fff;
+  opacity: 0.7;
+  line-height: 1.8;
+  TEXT-ALIGN: left;
+}
+
+.footer-box ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-box ul li {
+  opacity: 0.7;
+  margin-bottom: 10px;
+  line-height: 1.8;
+}
+.footer-box a{
+  color: aliceblue;
+}
+.footer-box ul li:last-child {
+  margin-bottom: 0;
+}
+
+.footer-box.subscribe form input[type=email] {
+  border: none;
+  background-color: #012738;
+  width: 78%;
+  padding: 15px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  color: #fff;
+}
+
+.footer-box.subscribe form button {
+  width: 20%;
+  border: none;
+  background-color: #012738;
+  color: #ed563b;
+  padding: 14px 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  cursor: pointer;
+}
+
+.footer-box.subscribe form button:focus {
+  outline: none;
+}
+
+.copyright {
+  background-color: #051922;
+  border-top: 1px solid #232a35;
+}
+@media only screen and (max-width: 767px)
+{
+.copyright p {
+    text-align: left !important;
+}
+}
+.copyright p {
+  margin: 0;
+  color: #fff;
+  opacity: 0.7;
+  padding: 10px 0;
+  font-size: 15px;
+}
+
+.copyright a {
+  color: #ed563b;
+  font-weight: 700;
+}
+
+.copyright a:hover {
+  color: #ed563b;
+}
+
+.social-icons ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.social-icons ul li {
+  display: inline-block;
+}
+
+.social-icons ul li a {
+  font-size: 16px;
+  color: #fff;
+  opacity: 0.7;
+  padding: 16px 10px;
+  display: block;
+}
+
+.footer-box ul li a {
+  color: #fff;
+}
+
+.footer-box.pages ul li {
+  position: relative;
+  padding-left: 20px;
+}
+
+.footer-box.pages ul li:before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  content: "\f105";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  color: #ed563b;
+}
+
+
+
+
 
 /* 
 ---------------------------------------------
@@ -1227,9 +1403,14 @@ responsive
   background: transparent;
   color: #ed563b!important;
 }
-
+.paginationactive{
+  background: #ed563b !important;
+  color: #eee !important;
+}
 .pagination-lg .page-link {
   color: #ed563b;
+  cursor: pointer;
+ 
 }
 
 .btn-primary {
@@ -1269,4 +1450,72 @@ a {
 a:focus,
 a:hover {
   color: #f9735b;
+}
+
+
+
+/* Wishlist container */
+.wishlist-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Wishlist card */
+.wishlist-card {
+  position: relative;
+  border: 1px solid #e6e6e6;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+/* Wishlist card image */
+.wishlist-card-image {
+  height: 200px;
+  overflow: hidden;
+}
+
+/* Wishlist card title */
+.wishlist-card .title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+/* Wishlist card price */
+.wishlist-card .price {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ff6b6b;
+  margin-bottom: 0;
+}
+
+/* Wishlist card cross icon */
+.compare-product-card .cross,
+.wishlist-card .cross {
+  top: 15px;
+  right: 15px;
+  width: 25px;
+  padding: 3px;
+  cursor: pointer;
+  z-index: 999;
+  filter: drop-shadow(0 0 10px #c83535);
+}
+
+/* Wishlist card hover effect */
+.wishlist-card:hover {
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Wishlist card hover effect on image */
+.wishlist-card:hover .wishlist-card-image {
+  transform: scale(1.1);
+}
+.down-content span{
+  color:#ed563b ;
+}
+
+.down-content h4,p{
+  color:#232d39 ;
 }

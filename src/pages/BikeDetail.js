@@ -1,36 +1,163 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
 import style from "../assets/css/style.css";
 import bikeDetail from "../assets/css/bikedetail.css";
-import Datetime from 'react-datetime';
-import 'react-datetime/css/react-datetime.css';
-// import { LocalizationProvider } from "@mui/x-date-pickers";
+import Datetime from "react-datetime";
+import "react-datetime/css/react-datetime.css";
 
 import "../assets/css/font-awesome.css";
 import "../assets/css/bootstrap.min.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { Component } from "react";
 import { toast, Toaster } from "react-hot-toast";
-// 
+import motocross from '../assets/images/Motocross.gif'
+import useRazorpay from "react-razorpay";
+// import DateTimePicker from "react-datetime-picker";
+// import 'react-datetime-picker/dist/DateTimePicker.css';
+// import 'react-calendar/dist/Calendar.css';
+// import 'react-clock/dist/Clock.css';
 
 const BikeDetail = () => {
+
   const [showPopup, setShowPopup] = useState(false);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    toast.success("Form submitted!!!");
+  var refEmail;
+  var refName;
+  var refDlNo;
+  var refPickupDate;
+  var refReturnDate;
+  
+
+  const [inputEmail, setInputEmail] = useState('');
+  const [inputDlNo, setInputDlNo] = useState('');
+  const [inputName, setInputName] = useState('');
+
+  const [returnDate, setReturnDate] = useState();
+  const [pickupDate, setPickupDate] = useState();
+  const [verificationResult, setVerificationResult] = useState('');
+  const uid = localStorage.getItem("userId");
+  
+
+
+  const Razorpay = useRazorpay();
+
+  const loadScript = (src) => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+
+    setInputEmail(refEmail.current.value);
+    setInputDlNo(refDlNo.current.value);
+    setInputName(refName.current.value);
+    setPickupDate((refPickupDate.current.value)+':00');
+
+    setReturnDate((refReturnDate.current.value)+':00');
+    console.log("Data from ref")
+    console.log(inputDlNo,inputEmail,inputName,pickupDate,returnDate)
+    const amount = bike.rate;
+    
+    const scriptLoaded = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+    if (scriptLoaded) {
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount }),
+      };
+      const response = await fetch(
+        "http://localhost:4000/razorpay",
+        requestOptions
+      );
+      const data = await response.json();
+      console.log(data);
+      const options = {
+        key: "rzp_test_bTDnw950m7Mzb4",
+        currency: data.currency,
+        amount: data.amount,
+        name: "Bike Rental",
+        description: "Book Bike Transaction",
+        image: motocross,
+        order_id: data.id,
+        theme: {
+          "color": "#ed563b"
+      },
+        handler: async function (response) {
+          const paymentId = response.razorpay_payment_id;
+          const razorpayOrderId = response.razorpay_order_id;
+          const razorpaySignature = response.razorpay_signature;
+              
+              
+          try {
+            const response1 = await fetch(`http://localhost:4000/verify-payment`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ paymentId,razorpayOrderId,razorpaySignature,inputDlNo,inputEmail,inputName,pickupDate,returnDate,uid,id,amount}),
+              });
+            const data = await response1.json();
+            
+            if (data.success) {
+              setVerificationResult('Payment is successful');
+              toast.success("Payment Success");
+            } else {
+              setVerificationResult('Payment is not successful');
+              toast.error("Payment Failed");
+            }
+          } catch (error) {
+            console.error('Payment Verification Error:', error);
+            setVerificationResult('Payment verification failed');
+          }
+
+
+        },
+ 
+          // Handle success and payment verification
+        
+       
+      };
+
+     
+      
+      var rzp1=new Razorpay(options);
+      rzp1.open();
+      setShowPopup(false);
+    } else {
+      console.log("Failed to load Razorpay script.");
+    }
+  };
   const handleCancel = () => {
     setShowPopup(false);
   };
+
   function PopupForm(props) {
     // const [selectedDate, setSelectedDate] = useState(null);
-    const [date, setDate] = useState(null);
+   // Access the refs from props
+  //const { refEmail, refName, refDlNo, refPickupDate, refReturnDate } = props;
+
+  refEmail=useRef(null);
+ refName=useRef(null);
+ refDlNo=useRef(null);
+ refPickupDate=useRef(null);
+ refReturnDate=useRef(null);
+
     return (
       <div className="popup">
         <div className="popup-inner">
-          <h2>{props.title}</h2>
+          <h2>Book Now</h2>
           <div class="modal-body">
             <div class="contact-us">
               <div class="contact-form"></div>
@@ -38,38 +165,14 @@ const BikeDetail = () => {
                 <div class="row">
                   <div class="col-md-6">
                     <fieldset>
+                   
                       <input
-                        type="text"
+                        type="email"
                         class="form-control"
                         placeholder="Enter email address"
-                        required=""
+                        required
+                        ref={refEmail}
                       />
-                    </fieldset>
-                  </div>
-
-                  <div class="col-md-6">
-                    <fieldset>
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Enter phone"
-                        required=""
-                      />
-                    </fieldset>
-                  </div>
-                </div>
-                <br />
-                <div class="row">
-                  <div class="col-md-6">
-                    <fieldset>
-                      {/* <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Pick-up Date Time"s
-                        required=""
-                      /> */}
-
-                      <Datetime selected={date} onChange={setDate}  initialValue="Select Pickup Date"/>
                     </fieldset>
                   </div>
                   <div class="col-md-6">
@@ -77,8 +180,9 @@ const BikeDetail = () => {
                       <input
                         type="text"
                         class="form-control"
-                        placeholder="Return Date Time"
-                        required=""
+                        placeholder="Full Name as per DL"
+                        required
+                        ref={refName}
                       />
                     </fieldset>
                   </div>
@@ -88,42 +192,66 @@ const BikeDetail = () => {
                   <div class="col-md-6">
                     <fieldset>
                       <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Full Name as per Driving License"
-                        required=""
+                       className="form-control"
+                       type="datetime-local"
+                       
+                       placeholder="Pickup Date & Time"
+                         ref={refPickupDate}
                       />
                     </fieldset>
                   </div>
                   <div class="col-md-6">
                     <fieldset>
                       <input
-                        type="text"
-                        class="form-control"
-                        placeholder=""
-                        required=""
+                     className="form-control"
+                      type="datetime-local"
+                      
+                      placeholder="Return Date & Time"
+                      
+                        ref={refReturnDate}
+                       
                       />
                     </fieldset>
                   </div>
+                </div>
+                <br />
+                <div class="row">
+                  <div class="col-md-6">
+                    <fieldset>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Enter Driving Lic No"
+                        required
+                        ref={refDlNo}
+                      />
+                    </fieldset>
+                  </div>
+                 
+                </div>
+                <br/>
+                <div class="row">
+                  <div class="col-md-6">
+                    <label htmlFor="inputField">
+                      You have to pay atleast: ₹{bike.rate}
+                    </label>
+                  </div>
+                  
                 </div>
                 <br />
                 <div class="modal-footer">
                   <button
                     type="button"
-                    class="btn btn-secondary"
+                    class="cancelBtn"
                     data-dismiss="modal"
                     onClick={props.handleCancel}
                   >
                     Cancel
                   </button>
-                  <button type="submit" class="btn btn-primary">
-                    Book Now
+                  <button type="submit" class="loginBtn">
+                   Pay Now
                   </button>
                 </div>
-                {/* <button type="submit">Submit</button>
-                <button type="button" onClick={props.handleCancel}>
-                  Cancel
-                </button> */}
               </form>
             </div>
           </div>
@@ -145,13 +273,6 @@ const BikeDetail = () => {
 
   const [bike, setBike] = useState([]);
   let { id } = useParams();
-  // useEffect(() => {
-  //     fetch(`http://localhost:4000/api/${+id}`)
-  //       .then(response =>
-  //         response.json())
-  //       .then(data => setBike(data))
-  //       .catch(error => console.log(error));
-  //   }, [id]);
 
   useEffect(() => {
     fetchData();
@@ -169,162 +290,37 @@ const BikeDetail = () => {
     }
   };
 
-  // let bikesArr=[{
-  //     id:1,
-  //     name:'TVS Jupiter',
-  //     img:jupiter,
-  //     description:'Moped, Auto Transmission with Boot',
-  //     passanger:2,
-  //     transmission:'A',
-  //     rate: 350
-  // },{
-  //     id:2,
-  //     name:'Honda Dio',
-  //     img:dio,
-  //     description:'Moped, Auto Transmission with Boot',
-  //     passanger:2,
-  //     transmission:'A',
-  //     rate: 370
-  // },
-  // {
-  //     id:3,
-  //     name:'Hero Pleasure',
-  //     img:pleasure,
-  //     description:'Moped, Auto Transmission with Boot',
-  //     passanger:2,
-  //     transmission:'A',
-  //     rate: 400
-  // },
-  // {
-  //     id:4,
-  //     name:'Honda SP 125',
-  //     img:sp,
-  //     description:' Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 420
-  // },{
-  //     id:5,
-  //     name:'Hero Splendor',
-  //     img:splendor,
-  //     description:'Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 410
-  // },{
-  //     id:6,
-  //     name:'KTM Duke 200',
-  //     img:duke,
-  //     description:'Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 700
-  // },
-  // {
-  //     id:7,
-  //     name:'Raider ',
-  //     img:raider,
-  //     description:'Manual Transmission without Boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 400
-  // },{
-  //     id:8,
-  //     name:'Yamaha MT15',
-  //     img:mt15,
-  //     description:'Manual Transmission without Boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 450
-  // },
-  // {
-  //     id:9,
-  //     name:'Yamaha FZS',
-  //     img:fzs,
-  //     description:'Manual Transmission without Boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 420
-  // },
-  // {
-  //     id:10,
-  //     name:'Ninja ZX10R',
-  //     img:ninja,
-  //     description:' ninja',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 700
-  // },{
-  //     id:11,
-  //     name:'Ninja H2 ',
-  //     img:ninjah2,
-  //     description:'Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 1500
-  // },{
-  //     id:12,
-  //     name:'Classic 350',
-  //     img:classic350,
-  //     description:'Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 700
-  // }
-  // ,
-  // {
-  //     id:13,
-  //     name:'TVS Apache',
-  //     img:tvsapache,
-  //     description:'Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 400
-  // },{
-  //     id:14,
-  //     name:'Ola S1 Pro',
-  //     img:ola,
-  //     description:'Moped, EV,  Auto Transmission with Boot',
-  //     passanger:2,
-  //     transmission:'A',
-  //     rate: 370
-  // },
-  // {
-  //     id:15,
-  //     name:'Hero Pleasure',
-  //     img:pleasure,
-  //     description:'Moped, Auto Transmission with Boot',
-  //     passanger:2,
-  //     transmission:'A',
-  //     rate: 400
-  // },
-  // {
-  //     id:16,
-  //     name:'Honda SP 125',
-  //     img:sp,
-  //     description:' Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 420
-  // },{
-  //     id:17,
-  //     name:'Hero Splendor',
-  //     img:splendor,
-  //     description:'Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 410
-  // },{
-  //     id:18,
-  //     name:'KTM Duke 200',
-  //     img:duke,
-  //     description:'Manual Transmission without boot',
-  //     passanger:2,
-  //     transmission:'M',
-  //     rate: 700
-  // }
-  // ]
-  // const bike=bikes.find((item)=>item.id===+id);
+  const handleAddToWishlist = async () => {
+    if (localStorage.getItem("user")) {
+     
+
+      // Assume userId and bikeId are already defined
+      fetch(`http://localhost:4000/wishlistAdd/${uid}/${id}`, {
+        method: "POST",
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.text();
+            // toast.success(response.statusText);
+            //   console.log("Bike added to wishlist");
+          } else {
+            console.error("Failed to add bike to wishlist");
+            throw new Error("failed");
+          }
+        })
+        .then((data) => {
+          toast.success(data);
+        })
+        .catch((error) => {
+          console.error("Error adding bike to wishlist:", error);
+        });
+    } else {
+      await toast.loading("Login First");
+      navigate("/login");
+    }
+  };
+
+ 
 
   return (
     <div>
@@ -365,21 +361,24 @@ const BikeDetail = () => {
                             <input type="number" placeholder="0"/>
                         </form> */}
                   <br />
+                  <button class="cart-btn" onClick={handleAddToWishlist}>
+                    {" "}
+                    Add To Wishlist{" "}
+                    <i class="fa-solid fa-heart" color="red"></i>
+                  </button>{" "}
                   <button class="cart-btn" onClick={checkLogin}>
                     {" "}
                     Book Now <i class="fa-solid fa-arrow-right"></i>
                   </button>
+                  
+                  <br />
                   {showPopup && (
                     <PopupForm
-                      title="Book Now"
-                      handleSubmit={handleSubmit}
-                      handleCancel={handleCancel}
+                    handleSubmit={handleSubmit}
+                    handleCancel={handleCancel}
                     />
                   )}
-
-                  {/* <a href="cart.html" class="cart-btn">
-                        
-                             Book Now <i class="fa-solid fa-arrow-right"></i></a> */}
+                  
                   <p>
                     <strong>Categories: </strong>
                     {bike.description}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!-- saved from url=(0118)https://app.zigchat.com/livechat/view?app_id=4guVMGdsdFG1dYJ9EK93fOKW4XfEYA08&user_id=0LQARYWQJab4cqzvfcXd3yuBsdOmCcqM -->
+<html lang="en" class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths" style="--gradient:linear-gradient(90deg, #032378 0%, #5172CA 100%); --botChatBackground:#fff; --botChatColor:#000000; --userChatBackground:#D02F2F; --userChatColor:#FFF; --chatHeaderColorLeft:#032378; --chatHeaderColorRight:#5172CA; --userChatActive:rgba(208,47,47,0.07);"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <link type="text/css" rel="stylesheet" href="./font-awesome.css" media="screen,projection">
+      <!--Import custom.css-->
+      <link type="text/css" rel="stylesheet" href="./custom.css" media="screen,projection">
+      
+      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <meta name="description" content="">
+      <meta name="author" content="GirnarSoft">
+      <meta name="theme-color" content="#3966c1">
+
+      <link rel="icon" type="image/png" sizes="16x16" href="https://app.zigchat.com/images/logo-zigchat-icon.png">
+      <link href="./css2" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="./chatbot-style.css">
+      <link rel="stylesheet" type="text/css" href="./datepicker.css">
+      <link rel="stylesheet" type="text/css" href="./animate.min.css">
+      <script src="./jquery.min.js.download"></script>
+      <script src="./sockjs.min.js.download"></script>
+      <script src="./stomp.min.js.download"></script>
+      <script src="./datepicker.js.download"></script>
+      <script src="./wow.min.js.download"></script>
+      <script src="./slick.min.js.download"></script>
+      <script src="./livechat-main.js.download"></script>
+   </head>
+   <body class="bg-none pt-0 lc-body">
+<input type="hidden" id="b_uid" value="0LQARYWQJab4cqzvfcXd3yuBsdOmCcqM">
+<input type="hidden" id="app_id" value="4guVMGdsdFG1dYJ9EK93fOKW4XfEYA08">
+<input type="hidden" id="avatar" value="https://s3.ap-south-1.amazonaws.com/girnar-botify/channel-media_f1v83hVGf8599mfF2W1rLwfzeROQybaEOeLUykFL1609995074526_04.png">
+<input type="hidden" id="transportProtocol" value="">
+ <input type="hidden" id="bot_chat_background" value="#fff">
+ <input type="hidden" id="bot_chat_color" value="#000000">
+ <input type="hidden" id="user_chat_background" value="#D02F2F">
+ <input type="hidden" id="user_chat_color" value="#FFF">
+ <input type="hidden" id="chat_header_color_left" value="#032378">
+ <input type="hidden" id="chat_header_color_right" value="#5172CA">
+ <input type="hidden" id="chat_bg_source" value="COLOR">
+ <input type="hidden" id="chat_bg_color" value="#ECECEC">
+ <input type="hidden" id="chat_bg_pattern" value="../images/bg-chat.png">
+<input type="hidden" id="chat_size" value="0">
+   <input type="hidden" class="welcome_messages" value="TEST">
+   <input type="hidden" class="welcome_message_options" value="DUMMY">
+<input type="hidden" id="is_welcome_event_call" value="true">
+ <input type="hidden" id="welcome_event_name" value="bikedekho_livechat_trigger">
+
+<div id="videos" class="lc-mainouter" style="display: none;">
+   <header id="lc-connected" class="lc-header-wrap" style="display: none;">
+      <div class="lc-header-left">
+         <a class="lc-logo"><img class="lc-chat-logo" src="./bd-logo.svg" alt="logo"></a>
+         <div class="lc-name-user"></div>
+      </div>
+      <div class="lc-header-right">
+         <a class="icon-only lc-cp lc-camera-flip" style="display: none;"><i class="lc-icon-03"></i></a>
+         <a class="icon-only lc-cp"><i class="lc-icon-07"></i></a>
+         <a class="lc-close-video icon-only lc-cp"><i class="lc-icon-08"></i></a>
+      </div>
+   </header>
+   <div id="subscriber" style="display: none;"></div>
+   <div id="publisher" class="publisher-not-on-call" style="display: none;"></div>
+   <div id="lc-connecting" class="lc-mainouter">
+      <header class="lc-header-wrap">
+         <div class="lc-header-left">
+            <a class="lc-logo"><img class="lc-chat-logo" src="./bd-logo.svg" alt="logo"></a>
+         </div>
+         <div class="lc-header-right">
+            <a class="lc-close-video icon-only lc-cp"><i class="lc-icon-08"></i></a>
+         </div>
+      </header>
+      <div id="lc-alert" class="lc-error-msg"> <span class="lc-alert-text"> </span> </div>
+      <div class="lc-pulse-icon">
+         <div class="lc-elements">
+            <div class="lc-circle lc-circle-outer"></div>
+            <div class="lc-circle lc-circle-inner"></div>
+            <div class="lc-pulse lc-pulse-1"></div>
+            <div class="lc-pulse lc-pulse-2"></div>
+            <div class="lc-pulse lc-pulse-3"></div>
+            <div class="lc-pulse lc-pulse-4"></div>
+            <div class="lc-pulse lc-pulse-5"></div>
+         </div>
+      </div>
+      <div class="lc-call-wrap">
+         <div class="lc-call-inner">
+            <div class="lc-call-content-wrap">
+               <div class="lc-voice-call-top">
+                  <h1 class="lc-call-title lc-text-center">
+                     <span id="lc-dealer-name"></span>
+                     <span class="lc-call-msg">calling…</span>
+                  </h1>
+               </div>
+               <div class="lc-call-icon-wrap">
+                  <ul class="lc-call-items">
+                     <li class="lc-call-item lc-start_call">
+                        <a class="lc-microphone lc-cp">
+                        <i class="lc-microphone-solid lc-icon-12"></i>
+                        <i class="lc-microphone-slash lc-icon-38" style="display:none;"></i>
+                        </a>
+                     </li>
+                     <li class="lc-call-item lc-end_call">
+                        <a class="lc-phone-disconnect lc-cp">
+                        <i class="lc-icon-31"></i>
+                        </a>
+                     </li>
+                     <li class="lc-call-item lc-video_call">
+                        <a class="lc-video-camera lc-cp">
+                        <i class="lc-video-slash-solid lc-icon-36"></i>
+                        <i class="lc-video-solid lc-icon-37" style="display:none;"></i>
+                        </a>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div id="lc-on-call-buttons" class="lc-call-icon-wrap" style="display: none;">
+      <ul class="lc-call-items">
+         <li class="lc-call-item lc-bg-white">
+            <a class="lc-microphone lc-cp">
+            <i class="lc-microphone-solid lc-icon-12"></i>
+            <i class="lc-microphone-slash lc-icon-38" style="display:none;"></i>
+            </a>
+         </li>
+         <li class="lc-call-item lc-end_call">
+            <a class="lc-phone-disconnect lc-cp">
+            <i class="lc-icon-31"></i>
+            </a>
+         </li>
+         <li class="lc-call-item lc-bg-white">
+            <a class="lc-video-camera lc-cp">
+            <i class="lc-video-slash-solid lc-icon-36"></i>
+            <i class="lc-video-solid lc-icon-37" style="display:none;"></i>
+            </a>
+         </li>
+      </ul>
+   </div>
+</div>
+
+<div id="lc-messages-chat-page" class="lc-mainouter lc-messages-chat-page" style="
+    background:transparent;background-color:#ECECEC;
+        ">
+   <header class="lc-header-wrap" style="background:#FFFFFF;">
+      <div class="lc-header-left">
+         <a class="lc-logo"><img class="lc-chat-logo" src="./bd-logo.svg" alt="logo"></a>
+      </div>
+      <div class="lc-header-right">
+         
+         
+         <a id="lc-chat-refresh" class="icon-only lc-reset"><i class="lc-icon-54 lc-cp" style="color:#000000;"></i></a>
+         <a id="lc-minimize" class="icon-only lc-close-iframe closeicon" style=""><i class="lc-icon-08 lc-cp" style="color:#000000;"></i></a>
+      </div>
+   </header>
+
+   <div class="lc-messages-content lc-space">
+      <div id="lc-chat-window">
+      </div>
+      <div id="lc-chat-textbox" class="lc-msgbar" style="">
+      <div class="lc-powered-by">
+      <a class="lc-copyright" href="https://www.zigchat.com/?utm_source=4guVMGdsdFG1dYJ9EK93fOKW4XfEYA08" target="_blank">
+         Powered <span class="lc-powered-icon">
+            <svg xml:space="preserve" xmlns:xlink="https://www.w3.org/1999/xlink" id="Layer_1" version="1.1" viewBox="0 0 512 512" x="0px" xmlns="https://www.w3.org/2000/svg" y="0px" class="_pwdSVG">
+               <g>
+                  <g>
+                     <polygon fill="#ffe701" points="426.667,213.333 288.36,213.333 333.706,0 148.817,0 85.333,298.667 227.556,298.667 227.556,512"></polygon>
+                  </g>
+               </g>
+            </svg>
+         </span> by <span class="lc-brand-name"> ZigChat (formerly BotsDekho)</span></a>
+      </div>
+      <div class="lc-msgarea lc-text-message-outer">
+           <div class="lc-alert-box lc-alert-box-info" style="display: none;">                
+           </div>
+           <a class="lc-dotbtn"><i class="lc-icon-25"></i></a>
+           <textarea placeholder="Write here" class="lc-text-message lc-textarea" id="lc-text-box" style="display: none;"></textarea>
+           <input placeholder="Type message..." type="text" class="lc-text-message lc-textarea" id="lc-tel-box" autocomplete="off">
+           <div class="lc-file-upload-panel lc-flex-box" style="display: none;">
+              <input class="lc-file-input " type="file" name="browse" id="botUploadFile">
+              <span class="lc-icon-02 lc-flex-box lc-file-btn"></span>
+           </div>
+           <a class="lc-sentbtn lcblue-hover lc-send-button"><i class="lc-icon-18"></i></a>
+        </div>
+      </div>
+      <div id="lc-message-dashboard" class="lc-welback-box lc-welfixed-bottom" style="display: none;">
+         <div class="lc-welinner-box lc-fade-in-up">
+            <div class="lc-drag">
+               <img class="lc-down-icon" src="./drag-down.png">
+               <img class="lc-up-icon" src="./drag-up.png" style="display: none;">
+             </div>
+            <div class="lc-title-pop">
+               <div class="lc-inner-title">Hey, 👋 Welcome Back</div>
+            </div>
+            <div class="lc-content-body">
+               <a class="lc-btn lc-border-btn continue-conversation">
+               Continue conversation
+               </a>
+               <a class="lc-btn lc-border-btn new-conversation">
+               New conversation
+               </a>
+            </div>
+         </div>
+      </div>
+      <div id="lc-data-container"></div>
+   </div>
+</div>
+        <script>
+         $( document ).ready(function() {
+             new WOW().init();
+         });
+         </script>
+   
+
+</body></html>

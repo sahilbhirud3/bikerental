@@ -1,0 +1,685 @@
+(function() {
+    var w = window;
+    var d = document;
+    var iframeEl;
+    var userId = getObject("b_uid");
+    var config = null;
+    var appId = w.livechatSettings.app_id;
+    var protocol = w.livechatSettings.protocol;
+    if(protocol == null || protocol == undefined) {
+        protocol = w.location.protocol;
+    }
+    var hostName = w.livechatSettings.host_name;
+    var isClp = w.livechatSettings.is_clp;
+    if (appId == null || hostName == null) {
+        return;
+    }
+    var isChatbotOpen = false;
+    var x = new XMLHttpRequest();
+    x.open('GET', protocol + '//' + hostName + '/api/v1/livechat/config?app_id=' + appId, true);
+    x.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var rs = JSON.parse(this.responseText);
+            if (userId == "" || userId == null) {
+                if (rs.result != null) {
+                    switch (rs.result.user_identification_method) {
+                        case "LOCAL_STORAGE":
+                            verifyFromLocalStorage(rs.result.key);
+                            break;
+                        case "COOKIE":
+                            verifyFromCookie(rs.result.key);
+                            break;
+                        case "FORM":
+                            verifyUsingForm(rs.result.key);
+                            break;
+                        case "SCRIPT":
+                            verifyFromScript(rs.result.key);
+                            break;
+                        case "XPATH":
+                            verifyFromXPath(rs.result.xpath);
+                            break;
+                        default:
+                            // code block
+                    }
+                }
+            }
+            config = rs.result;
+            createIFrame();
+            setTimeout(function() {
+                createButtons();
+            }, (rs.result.icon_delay_in_sec * 1000));
+            var isAutoPopup = getCookie("lc_is_auto_popup");
+            if (isAutoPopup == "") {
+                if (rs.result.auto_popup) {
+                    setTimeout(function() {
+                        if(iframeEl.style.display == 'none') {
+                            autoPopUp();
+                        }
+                    }, ((rs.result.icon_delay_in_sec + rs.result.auto_popup_delay_in_sec) * 1000));
+                }
+            }
+            setTimeout(function() {
+                var isAutoPopupMessage = getCookie("lc_is_auto_popup_message");
+                if(!isChatbotOpen && isAutoPopupMessage == "" && config.sound_enabled) {
+                    playPopupTone();
+                }
+            }, ((rs.result.icon_delay_in_sec + 3) * 1000));
+        }
+    }
+    x.send();
+
+    // create iframe
+    function createIFrame() {
+        var params = 'app_id=' + appId;
+        if (userId) {
+            params += '&user_id=' + userId;
+        }
+        if (isClp) {
+            params += '&is_clp=' + isClp;
+        }
+
+        var i = d.createElement('iframe');
+        i.setAttribute('src', protocol + "//" + hostName + "/livechat/view?" + params);
+        i.setAttribute("style", "display: none");
+        i.setAttribute('id', 'botify-iframe');
+        i.setAttribute('allow', 'geolocation;microphone;camera');
+        if(isClp) {
+            i.setAttribute('class', 'lc-clp');
+            d.getElementById("bot-render-div").appendChild(i);
+        } else {
+            d.body.appendChild(i);
+        }
+    }
+
+    function createButtons() {
+        var lc_bottom = "";
+        var lc_left = "";
+        var lc_left_popup = "";
+        if (config.bottom) {
+            lc_bottom = "bottom:20px;";
+        } else {
+            lc_bottom = "top:20px;";
+        }
+        if (config.right) {
+            lc_left_popup = "right:60px;";
+            lc_left = "right: 20px;";
+        } else {
+            lc_left_popup = "left:60px;";
+            lc_left = "left: 20px;";
+        }
+        if(config.bottom_margin) {
+            lc_bottom_margin = "margin-bottom:"+config.bottom_margin+"px;";
+        } else {
+            lc_bottom_margin = "margin-bottom:0px;";
+        }
+
+        // Google Tag Manager
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.text = "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','lcDataLayer','GTM-KZ9MP7P');";
+        d.getElementsByTagName('head')[0].appendChild(script);
+
+        var styles = ".chat-clp.lc-wel-msg{display:none;}.lc-clp{width:inherit !important;height:90vh !important;position:inherit !important;box-shadow:none !important;}@media(max-width:767px){.lc-clp { width: 100% !important; height: 100% !important; position: fixed !important;}}.lc-square-avatar img{border-radius:4px !important; background:#e2e4f0;}.lc-animation {animation: n_arrow 1.6s infinite;}.lc-wel-msg{position:fixed;width:55px;height:55px;border-radius:50%;z-index: 999999;" + lc_bottom + "" + lc_bottom_margin + "" + lc_left + "}.lc-wel-msg .lc-chat-fixed{position:relative;border-radius:50%;right:0;bottom:0;cursor: pointer;}.lc-wel-msg .lc-text-window{width: 174px;max-width: max-content;padding:12px 22px 12px 12px;border-radius:12px;box-shadow:0 2px 4px 0 rgba(176,176,176,0.5);border:solid 1px #e5e5e5;background-color:#fff;position:absolute;line-height:1.64;letter-spacing:normal;color:#24272c;cursor: default;font-size:14px; " + lc_bottom + "" + lc_left_popup + "}.lc-wel-msg .lc-text-window img{max-width:20px}.lc-wel-msg .lc-text-window .hi{margin:0 3px -5px}.lc-wel-msg .lc-text-window .lc-close-msg{position:absolute;right:20px;top:12px;cursor:pointer;display:flex;justify-content:center;align-items:center;font-size:10px;color:#24272c;opacity:.3}.lc-wel-msg .lc-text-window .lc-close-msg:hover{opacity:1}  .stop-scrolling {overflow: hidden;height: 100% }#livechat-chat-indicator {line-height: 19px;color: white;font-weight: bold;border-radius: 50%;width: 21px;height: 21px;border: 0 none;margin: 0;position: absolute;top: 0;right: -6px;background: #e52f48;}.lc-close-icon::after, .lc-close-icon::before {content: '';position: absolute;top: 50%;left: 50%;width: 11px;height: 2px;background-color: #575757;border-radius: 2px;}.lc-close-icon::before {-ms-transform: rotate(50deg);-webkit-transform: rotate(50deg);transform: rotate(50deg) }.lc-close-icon::after {-ms-transform: rotate(130deg);-webkit-transform: rotate(130deg);transform: rotate(130deg) }iframe#botify-iframe {position: fixed;border: none;background: none;z-index: 999999;width: 360px;" + lc_bottom + "" + lc_bottom_margin + "" + lc_left + " height: 80%;border-radius: 3px;box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);}@media(max-width:767px) {iframe#botify-iframe {position: fixed;height: 100%;width: 100%;border: none;background: none;top: 0px;left: 0px;right: 0px;bottom: 0px;border-radius: 0;box-shadow: none !important;}}     @keyframes n_arrow{0%{-webkit-transform:rotate(360deg) translateY(0);transform:rotate(360deg) translateY(0)}25%{-webkit-transform:rotate(360deg) translateY(6px);transform:rotate(360deg) translateY(6px)}40%{-webkit-transform:rotate(360deg) translateY(4px);transform:rotate(360deg) translateY(4px)}55%{-webkit-transform:rotate(360deg) translateY(6px);transform:rotate(360deg) translateY(6px)}90%,to{-webkit-transform:rotate(360deg) translateY(0);transform:rotate(360deg) translateY(0)}}@-webkit-keyframes n_arrow{0%{-webkit-transform:rotate(360deg) translateY(0);transform:rotate(360deg) translateY(0)}25%{-webkit-transform:rotate(360deg) translateY(6px);transform:rotate(360deg) translateY(6px)}40%{-webkit-transform:rotate(360deg) translateY(4px);transform:rotate(360deg) translateY(4px)}55%{-webkit-transform:rotate(360deg) translateY(6px);transform:rotate(360deg) translateY(6px)}90%,to{-webkit-transform:rotate(360deg) translateY(0);transform:rotate(360deg) translateY(0)}}.lc-wave{position:absolute;text-align:center;top:0;right:0;width:55px;height:55px;border-radius:50%;background-color:#999;opacity:0;z-index:-1;pointer-events:none;animation:Waveeffects 2s linear infinite}@keyframes Waveeffects{from{opacity:.4}to{transform:scale(3);opacity:0}}.lc-unread-count{background-color: #fd6440;display:flex;width: 18px;height: 18px;color: white;font-weight: bold;border: 1px solid;position: absolute;border-radius: 50%;top: 2px;z-index: 1;text-align: center;font-size: 12px;justify-content: center;align-items: center;font-family: var(--font-family);left:-6px;right:auto;}";
+        var css = d.createElement('style');
+        css.type = 'text/css';
+
+        if (css.styleSheet) {
+            css.styleSheet.cssText = styles;
+        } else {
+            css.appendChild(d.createTextNode(styles));
+        }
+        d.getElementsByTagName("head")[0].appendChild(css);
+
+        var lcWelMsg = d.createElement('div');
+        lcWelMsg.className = (isClp ? 'chat-clp lc-wel-msg ' : 'lc-wel-msg ') +(config.transition_type == 'JUMP' ? 'lc-animation' : '')+(config.avatar_shape == 'SQUARE' ? ' lc-square-avatar' : '');
+        lcWelMsg.id = 'lc-connect';
+        lcWelMsg.innerHTML = '<img class="lc-chat-fixed" id="lc-connect-chat" src="' + config.logo + '" width="55" height="55" alt="ChatBot"/>';
+
+        var lcWave = d.createElement('div');
+        lcWave.className = 'lc-wave';
+        lcWave.id = 'lc-wave';
+        lcWave.style.display = (config.transition_type == 'RIPPLE' ? 'block' : 'none')
+
+        var lcTextWindow = d.createElement('div');
+        lcTextWindow.className = 'lc-text-window';
+        lcTextWindow.id = 'lc-text-window';
+        lcTextWindow.style.display = 'none';
+        lcTextWindow.innerHTML = config.welcome_popup_message;
+
+        var lcCloseMsg = d.createElement('div');
+        lcCloseMsg.className = 'lc-close-msg';
+        lcCloseMsg.id = 'lc-close-msg';
+        lcCloseMsg.innerHTML = '<i id="lc-close-popup" class="lc-close-icon"></i>';
+
+        lcTextWindow.appendChild(lcCloseMsg);
+        lcWelMsg.appendChild(lcWave);
+        lcWelMsg.appendChild(lcTextWindow);
+
+        var body = d.getElementsByTagName("body")[0];
+        body.appendChild(lcWelMsg);
+
+        document.getElementById("lc-connect-chat").onload = function() {
+            if(isClp) {
+                renderClp();
+            } else {
+                if (config.welcome_popup_message != null && config.welcome_popup_message != '') {
+                    var isAutoPopupMessage = getCookie("lc_is_auto_popup_message");
+                    if (isAutoPopupMessage) {
+                        d.getElementById("lc-text-window").style.display = "none";
+                        d.getElementById("lc-wave").style.display = "none";
+                        d.getElementById("lc-connect").classList.remove("lc-animation");
+                    } else {
+                        d.getElementById("lc-text-window").style.display = "block";
+                    }
+                }
+            }
+        };
+
+        // Send a message to the child iframe
+        iframeEl = d.getElementById('botify-iframe');
+
+        var lcConnectChat = document.getElementById("lc-connect-chat");
+        lcConnectChat.addEventListener("click", function() {
+            if(document.getElementById("preview-div")){
+                previewChatbot();
+            } else {
+                openChatbot();
+            }
+        });
+
+        var lcTextWindow = document.getElementById("lc-text-window");
+        lcTextWindow.addEventListener("click", function(e) {
+            openChatbot();
+        });
+
+        var lcClosePopup = document.getElementById("lc-close-popup");
+        lcClosePopup.addEventListener("click", function(e) {
+            e.stopPropagation();
+            closePopupMessage();
+        });
+
+        if(config.sound_enabled) {
+            addPopupSound();
+            addMsgReceivedSound();
+        }
+
+        if(config.audio_call_enabled || config.video_chat_enabled) {
+            addConnectingAudio();
+            addRingingAudio();
+        }
+    }
+    
+    function renderClp() {
+        var loaderDiv = d.getElementById("loader-div");
+        if (loaderDiv) {
+            loaderDiv.remove();
+        }
+        openChatbot();
+    }
+    
+    function previewChatbot() {
+        var previewWorkflowId = document.getElementById('preview-workflow-id-div').value;
+        isChatbotOpen = true;
+        var json = {
+            "action": "PREVIEW",
+            "previewWorkflowId": previewWorkflowId
+        };
+        iframeEl.contentWindow.postMessage(JSON.stringify(json), '*');
+        iframeEl.style.display = "block";
+        d.getElementById("lc-connect").style.display = "none";
+        if (window.innerWidth < 767) {
+            parent.document.body.classList.add("stop-scrolling");
+        }
+        closePopupMessage();
+        locationChangeHandler();
+        callAnalytics({
+            "category": "BotsDekho",
+            "action": "LiveChat",
+            "label": "Open"
+        });
+    }
+
+    function openChatbot() {
+        isChatbotOpen = true;
+        var json = {
+            "action": "CONNECT",
+            "cookies": document.cookie,
+            "location": document.location.href
+        };
+        iframeEl.contentWindow.postMessage(JSON.stringify(json), '*');
+        iframeEl.style.display = "block";
+        removeUnreadCount();
+        d.getElementById("lc-connect").style.display = "none";
+        if (window.innerWidth < 767) {
+            parent.document.body.classList.add("stop-scrolling");
+        }
+        closePopupMessage();
+        locationChangeHandler();
+        callAnalytics({
+            "category": "BotsDekho",
+            "action": "LiveChat",
+            "label": "Open"
+        });
+    }
+
+    function closePopupMessage() {
+        d.getElementById("lc-text-window").style.display = "none";
+        setCookie("lc_is_auto_popup_message", false, 30);
+        d.getElementById("lc-wave").style.display = "none";
+        d.getElementById("lc-connect").classList.remove("lc-animation");
+    }
+
+    function disconnectLC(explicit) {
+        setCookie("lc_is_auto_popup", false, 30);
+        iframeEl.style.display = "none";
+        d.getElementById("lc-connect").style.display = "block";
+        isChatbotOpen = false;
+        callAnalytics({
+            "category": "BotsDekho",
+            "action": "LiveChat",
+            "label": (explicit == true? "External Close" : "Close")
+        });
+        parent.document.body.classList.remove("stop-scrolling");
+    }
+
+    function addConnectingAudio() {
+        var audio = document.createElement('audio');
+        audio.src = protocol + "//" + hostName + "/audio/lc_connecting_agent.mp3";
+        audio.id = "lc_video_connecting";
+        audio.controls = 'controls';
+        audio.loop = 'loop';
+        audio.type = "audio/mpeg";
+        audio.setAttribute("style", "display: none");
+        var body = d.getElementsByTagName("body")[0];
+        body.appendChild(audio);
+    }
+
+    function addRingingAudio() {
+        var audio = document.createElement('audio');
+        audio.src = protocol + "//" + hostName + "/audio/lc_call_ringing.mp3";
+        audio.id = "lc_video_ringing";
+        audio.controls = 'controls';
+        audio.loop = 'loop';
+        audio.type = "audio/mpeg";
+        audio.setAttribute("style", "display: none");
+        var body = d.getElementsByTagName("body")[0];
+        body.appendChild(audio);
+    }
+
+    function addPopupSound() {
+        var audio = document.createElement('audio');
+        audio.src = protocol + "//" + hostName + "/audio/lc_popup_tone.mp3";
+        audio.id = "lc_popup_tone";
+        audio.controls = 'controls';
+        audio.type = "audio/mpeg";
+        audio.setAttribute("style", "display: none");
+        var body = d.getElementsByTagName("body")[0];
+        body.appendChild(audio);
+    }
+
+    function addMsgReceivedSound() {
+        var audio = document.createElement('audio');
+        audio.src = protocol + "//" + hostName + "/audio/lc_msg_received_tone.mp3";
+        audio.id = "lc_msg_received_tone";
+        audio.controls = 'controls';
+        audio.type = "audio/mpeg";
+        audio.setAttribute("style", "display: none");
+        var body = d.getElementsByTagName("body")[0];
+        body.appendChild(audio);
+    }
+    
+    function playConnectingAudio() {
+        try {
+            var x = document.getElementById("lc_video_connecting");
+            x.play();
+        } catch (err) {
+            console.log("Error on play connecting audio")
+        }
+    }
+
+    function playRingingAudio() {
+        try {
+            var x = document.getElementById("lc_video_ringing");
+            x.play();
+        } catch (err) {
+            console.log("Error on play ringing audio")
+        }
+    }
+
+    function pauseConnectingAudio() {
+        var x = document.getElementById("lc_video_connecting");
+        x.pause();
+    }
+
+    function playMsgReceivedTone() {
+        try {
+            var x = document.getElementById("lc_msg_received_tone");
+            x.play();
+        } catch (err) {
+            console.log("Error on playing msg sent tone");
+        }
+    }
+
+    function pauseRingingAudio() {
+        var x = document.getElementById("lc_video_ringing");
+        x.pause();
+    }
+
+    function playPopupTone() {
+        try {
+            var x = document.getElementById("lc_popup_tone");
+            x.play();
+        } catch (err) {
+            console.log("Error on playing popup tone");
+        }
+    }
+
+    function lcCloseIframe() {
+        disconnectLC();
+    }
+
+    function autoPopUp() {
+        var json = {
+            "action": "CONNECT",
+            "cookies": document.cookie,
+            "location": document.location.href
+        };
+        iframeEl.contentWindow.postMessage(JSON.stringify(json), '*');
+        iframeEl.style.display = "block";
+        d.getElementById("lc-connect").style.display = "none";
+        callAnalytics({
+            "category": "BotsDekho",
+            "action": "LiveChat",
+            "label": "AutoOpen"
+        });
+        closePopupMessage();
+    }
+
+    // addEventListener support for IE8
+    function bindEvent(element, eventName, eventHandler) {
+        if (element.addEventListener) {
+            element.addEventListener(eventName, eventHandler, false);
+        } else if (element.attachEvent) {
+            element.attachEvent('on' + eventName, eventHandler);
+        }
+    }
+
+    // Listen to message from child iframe
+    bindEvent(window, 'message', function(e) {
+        try {
+            if (e.data != undefined) {
+                var msg = JSON.parse(e.data);
+                if (msg == null)
+                    return;
+
+                switch (msg.action) {
+                    case 'ADDUSERANDSTARTCHAT':
+                        setObject("b_uid", msg.userId);
+                        break;
+                    case 'CALLANALYTICS':
+                        callAnalytics(msg.data);
+                        break;
+                    case 'PLAY_CONNECTING_RING':
+                        playConnectingAudio();
+                        break;
+                    case 'PAUSE_CONNECTING_RING':
+                        pauseConnectingAudio();
+                        break;
+                    case 'PLAY_RINGING':
+                        playRingingAudio();
+                        break;
+                    case 'PAUSE_RINGING':
+                        pauseRingingAudio();
+                        break;
+                    case 'CLOSE_IFRAME':
+                        lcCloseIframe();
+                        break;
+                    case 'MSG_RECEIVED':
+                        addUnreadCount();
+                        playMsgReceivedTone();
+                        break;
+                    default:
+                }
+            }
+        } catch (err) {
+            console.log("Error on bindEvent");
+        }
+    });
+
+    function verifyFromLocalStorage(key) {
+        var user = getObject(key);
+        if (user == "" || user == null) {
+            userId = createUserId(32);
+        } else {
+            userId = user;
+        }
+        setObject("b_uid", userId);
+    }
+
+    function verifyFromCookie(key) {
+        var user = getCookie(key);
+        if (user == "" || user == null) {
+            userId = createUserId(32);
+        } else {
+            userId = user;
+        }
+        setObject("b_uid", userId);
+    }
+
+    function verifyFromScript(key) {
+        var user = null;
+        try {
+            user = eval(key);
+        } catch (err) {
+            console.log("Error on script");
+        }
+        if (user == "" || user == null) {
+            userId = createUserId(32);
+        } else {
+            userId = user;
+        }
+        setObject("b_uid", userId);
+    }
+
+    function verifyFromXPath(xpath) {
+        var user = getElementByXPath(xpath);
+        if (user == "" || user == null) {
+            userId = createUserId(32);
+        } else {
+            userId = user;
+        }
+        setObject("b_uid", userId);
+    }
+
+    function getElementByXPath(xpath) {
+        return new XPathEvaluator().createExpression(xpath).evaluate(document,
+            XPathResult.FIRST_ORDERED_NODE_TYPE).singleNodeValue
+    }
+
+    function verifyUsingForm(key) {
+
+    }
+
+    // localStorage
+    function setObject(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getObject(key) {
+        var value = localStorage.getItem(key);
+        return value && JSON.parse(value);
+    }
+
+    // cookie Info
+    function setCookie(cname, cvalue, exmins) {
+        if (exmins) {
+            var date = new Date();
+            date.setTime(date.getTime() + exmins * 60 * 1000);
+            var expires = "; expires=" + date.toGMTString();
+        } else {
+            var expires = "";
+        }
+        d.cookie = cname + "=" + cvalue + expires + ";path=/";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = d.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function callAnalytics(event) {
+        event.event = "botsdekho-event";
+        event['channel-detail-name'] = config.name;
+        event['organization-name'] = config.organization;
+        event['channel-detail-id'] = config.id;
+        event['organization-id'] = config.organization_id;
+        event['env'] = config.env;
+        try {
+            w.dataLayer.push(event);
+        } catch (err) {
+            console.log("GTM not in used trying for GA");
+            try {
+                event.hitType = "event";
+                w.ga('send', event);
+            } catch (err) {
+                console.log("GA not in used");
+            }
+        }
+        try {
+            w.lcDataLayer.push(event);
+        } catch (err) {
+            console.log("Exception on LCGA");
+        }
+        try {
+	        var http = new XMLHttpRequest()
+	        var url = protocol + '//' + hostName + '/api/v1/bot-impression/collect?channelDetailId=' + config.id + '&organizationId=' + config.organization_id + '&event=' + event.label;
+	        http.open("GET", url);
+	        http.send();
+        } catch (err) {
+            console.log("Exception on bot-impressions");
+        }
+    }
+
+    //create user Id
+    function createUserId(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() *
+                charactersLength));
+        }
+        return result;
+    }
+
+    history.pushState = (f => function pushState() {
+        var ret = f.apply(this, arguments);
+        window.dispatchEvent(new Event('pushstate'));
+        window.dispatchEvent(new Event('locationchange'));
+        return ret;
+    })(history.pushState);
+
+    history.replaceState = (f => function replaceState() {
+        var ret = f.apply(this, arguments);
+        window.dispatchEvent(new Event('replacestate'));
+        window.dispatchEvent(new Event('locationchange'));
+        return ret;
+    })(history.replaceState);
+
+    w.addEventListener('popstate', ()=>{
+        window.dispatchEvent(new Event('locationchange'))
+    });
+
+    w.addEventListener('locationchange', function() {
+        locationChangeHandler();
+    });
+
+    function locationChangeHandler() {
+        if (iframeEl) {
+            var json = {
+                "action": "LOCATION_CHANGE",
+                "location": document.location.href,
+                "cookies": document.cookie
+            };
+            iframeEl.contentWindow.postMessage(JSON.stringify(json), '*');
+        }
+    }
+
+    w.livechatSettings.open = function() {
+        d.getElementById('lc-connect-chat').click();
+    }
+
+    w.livechatSettings.close = function() {
+        disconnectLC(true);
+    }
+
+    w.livechatSettings.show = function() {
+        w.livechatSettings.close();
+        d.getElementById('lc-connect').style.display = "block";
+    }
+
+    w.livechatSettings.hide = function() {
+        disconnectLC(true);
+        d.getElementById('lc-connect').style.display = "none";
+    }
+
+    w.livechatSettings.startVideoCall = function(departmentId, departmentName) {
+        var json = {
+            "action": "VIDEOCALL",
+            "department_id": departmentId,
+            "department_name": departmentName
+        };
+        iframeEl.contentWindow.postMessage(JSON.stringify(json), '*');
+        iframeEl.style.display = "block";
+        d.getElementById("lc-connect").style.display = "none";
+        callAnalytics({
+            "category": "BotsDekho",
+            "action": "LiveChat",
+            "label": "External Video Call"
+        });
+        if (window.innerWidth < 767) {
+            parent.document.body.classList.add("stop-scrolling");
+        }
+        closePopupMessage();
+    }
+
+    function addUnreadCount() {
+        if (!isChatbotOpen) {
+            var el = d.getElementById("lc-unread-count");
+            if (el) {
+                var currCount = 0;
+                try {
+                    currCount = parseInt(el.textContent);
+                } catch(err) {}
+                el.textContent = currCount + 1;
+                el.style.display = "flex";
+            } else {
+                el = d.createElement('div');
+                el.id = "lc-unread-count";
+                el.className = "lc-unread-count";
+                el.textContent = "1";
+            }
+            var img = d.getElementById("lc-connect-chat");
+            img.parentNode.insertBefore(el, img);
+        }
+    }
+
+    function removeUnreadCount() {
+        var el = d.getElementById("lc-unread-count");
+        if (el) {
+            el.style.display = "none";
+            el.textContent = "0";
+        }
+    }
+
+})();
