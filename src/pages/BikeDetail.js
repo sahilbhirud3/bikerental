@@ -147,7 +147,6 @@ const BikeDetail = () => {
     // const [selectedDate, setSelectedDate] = useState(null);
    // Access the refs from props
   //const { refEmail, refName, refDlNo, refPickupDate, refReturnDate } = props;
-
   refEmail=useRef(null);
  refName=useRef(null);
  refDlNo=useRef(null);

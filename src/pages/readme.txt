@@ -1,4 +1,3 @@
-
   {
     returnDateTime: Timestamp { _seconds: 1684571280, _nanoseconds: 0 },
     pickupDateTime: Timestamp { _seconds: 1684312020, _nanoseconds: 0 },

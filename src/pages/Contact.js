@@ -73,8 +73,7 @@ const Contact = () => {
         <div className="row">
           <div className="col-lg-10 offset-lg-1">
             <div className="cta-content">
-              <br />
-              <br />
+             
               <h2>Feel free to <em>Contact Us</em></h2>
               <p>We're Available for solving your queries</p>
             </div>
@@ -86,7 +85,7 @@ const Contact = () => {
       <div className="container">
         <div className="row text-center">
           <div className="col-lg-6 offset-lg-3">
-            <div className="section-heading">
+            <div className="section-heading" style={{marginTop:"20px",marginBottom:"20px"}}>
               <h2>contact <em> info</em></h2>
               <img src={linedec} alt="waves" />
             </div>
@@ -99,7 +98,7 @@ const Contact = () => {
            
             <h5><a href="#">+919579213171</a></h5>
             <h5><a href="#">+918600386608</a></h5>
-            <br/>
+          
           </div>
 
           <div className="col-md-4">
@@ -108,7 +107,7 @@ const Contact = () => {
             </div>
             <h5><a href="#">chaitanyabhavar2021@gmail.com</a></h5>
             <h5><a href="#">sahilbhirud3@gmail.com</a></h5>
-            <br/>
+           
           </div>
 
           <div className="col-md-4">
@@ -116,13 +115,13 @@ const Contact = () => {
               <i className="fa fa-map-marker"></i>
             </div>
             <h5>Goa,India</h5>
-            <br/>
+            
           </div>
         </div>
       </div>
     </section>
    
-    <section className="section" id="contact-us" style={{ marginTop: 0 }}>
+    <section className="section" id="contact-us" style={{ marginTop: 0,marginBottom:0 }}>
       <div className="container-fluid">
         <div className="row">
           <div className="col-lg-6 col-md-6 col-xs-12">
